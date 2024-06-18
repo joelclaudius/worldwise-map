@@ -14,7 +14,7 @@ function Map() {
         navigate("form");
       }}
     >
-      <hi>Map</hi>
+      <h1>Map</h1>
       <h1>
         Positions: {lat}, {lng}
       </h1>

@@ -1,11 +1,13 @@
 // CountryList.jsx
-import PropTypes from "prop-types";
 import CountryItem from "./CountryItem";
 import styles from "./CountryList.module.css";
 import Spinner from "./Spinner";
 import Message from "./Message";
+import { useCities } from "../context/CitiesContext";
 
-function CountryList({ cities, isLoading }) {
+function CountryList() {
+  const { cities, isLoading } = useCities();
+
   if (isLoading) return <Spinner />;
 
   if (!cities.length) {
@@ -21,16 +23,16 @@ function CountryList({ cities, isLoading }) {
 
   return (
     <ul className={styles.countryList}>
-      {countries.map((country, index) => (
-        <CountryItem key={index} country={country} />
+      {countries.map((country) => (
+        <CountryItem key={country.id} country={country} />
       ))}
     </ul>
   );
 }
 
-CountryList.propTypes = {
-  cities: PropTypes.array.isRequired,
-  isLoading: PropTypes.bool.isRequired,
-};
+// CountryList.propTypes = {
+//   cities: PropTypes.array.isRequired,
+//   isLoading: PropTypes.bool.isRequired,
+// };
 
 export default CountryList;
