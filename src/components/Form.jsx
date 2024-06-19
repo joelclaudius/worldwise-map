@@ -1,10 +1,7 @@
-// "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=0&longitude=0"
-
 import { useEffect, useState } from "react";
-
 import styles from "./Form.module.css";
 import Button from "./Button";
-import { useNavigate } from "react-router-dom";
+import Spinner from "./Spinner";
 import BackButton from "./BackButton";
 import { useUrlPosition } from "../Hooks/useUrlPosition";
 
@@ -19,32 +16,36 @@ export function convertToEmoji(countryCode) {
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 function Form() {
-  const { lat, lng } = useUrlPosition();
+  const [mapLat, mapLng] = useUrlPosition();
 
-  const navigate = useNavigate();
   const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
   const [cityName, setCityName] = useState("");
   const [country, setCountry] = useState("");
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today's date
   const [notes, setNotes] = useState("");
+  const [emoji, setEmoji] = useState("");
 
   useEffect(() => {
+    if (!mapLat || !mapLng) return;
     const fetchCityData = async () => {
       try {
         setIsLoadingGeocoding(true);
-        const res = await fetch(`${BASE_URL}?latitude=${lat}&longitude=${lng}`);
+        const res = await fetch(
+          `${BASE_URL}?latitude=${mapLat}&longitude=${mapLng}`
+        );
         const data = await res.json();
         console.log(data);
         setCityName(data.city || data.locality || "");
         setCountry(data.countryName);
+        setEmoji(convertToEmoji(data.countryCode));
       } catch (err) {
-        throw new Error("Error loading data");
+        console.error("Error loading city data:", err);
       } finally {
         setIsLoadingGeocoding(false);
       }
     };
     fetchCityData();
-  }, [lat, lng]);
+  }, [mapLat, mapLng]); // Fetch data when lat or lng changes
 
   return (
     <form className={styles.form}>
@@ -52,30 +53,30 @@ function Form() {
         <label htmlFor="cityName">City name</label>
         <input
           id="cityName"
-          onChange={(e) => setCityName(e.target.value)}
           value={cityName}
+          onChange={(e) => setCityName(e.target.value)}
+          disabled={isLoadingGeocoding} // Disable input while loading
         />
-        {/* <span className={styles.flag}>{emoji}</span> */}
+        <span className={styles.flag}>{emoji}</span>
       </div>
-
       <div className={styles.row}>
         <label htmlFor="date">When did you go to {cityName}?</label>
         <input
+          type="date"
           id="date"
-          onChange={(e) => setDate(e.target.value)}
           value={date}
+          onChange={(e) => setDate(e.target.value)}
         />
       </div>
-
       <div className={styles.row}>
         <label htmlFor="notes">Notes about your trip to {cityName}</label>
         <textarea
           id="notes"
-          onChange={(e) => setNotes(e.target.value)}
           value={notes}
+          onChange={(e) => setNotes(e.target.value)}
         />
       </div>
-
+      {isLoadingGeocoding && <Spinner />} {/* Show spinner if loading */}
       <div className={styles.buttons}>
         <Button type="primary">Add</Button>
         <BackButton />

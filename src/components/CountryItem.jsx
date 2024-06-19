@@ -11,11 +11,4 @@ function CountryItem({ country }) {
   );
 }
 
-CountryItem.propTypes = {
-  country: PropTypes.shape({
-    emoji: PropTypes.string.isRequired,
-    country: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
 export default CountryItem;
