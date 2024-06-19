@@ -1,4 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Button from "./Button";
 import {
   MapContainer,
   TileLayer,
@@ -10,32 +11,64 @@ import {
 import styles from "./Map.module.css";
 import { useState, useEffect } from "react";
 import { useCities } from "../context/CitiesContext";
+import { useGeolocation } from "../Hooks/useGeolocation";
 
 function Map() {
   const { cities } = useCities();
-
   const [searchParams] = useSearchParams();
-  const [mapPosition, setMapPosition] = useState([40, 0]);
+  const [mapPosition, setMapPosition] = useState([40, 0]); // Default position
 
-  // Correct retrieval of lat and lng from search params
+  const {
+    isLoading: isLoadingPosition,
+    position: geoLocationPosition,
+    getPosition,
+  } = useGeolocation();
+
+  // Extract and validate URL parameters
   const mapLat = parseFloat(searchParams.get("lat"));
   const mapLng = parseFloat(searchParams.get("lng"));
 
-  // Validate the lat and lng values
   const isValidLat = !isNaN(mapLat) && mapLat >= -90 && mapLat <= 90;
   const isValidLng = !isNaN(mapLng) && mapLng >= -180 && mapLng <= 180;
 
+  // Update map position from URL parameters if valid
   useEffect(() => {
     if (isValidLat && isValidLng) {
+      console.log("Valid URL params found, updating map position to:", [
+        mapLat,
+        mapLng,
+      ]);
       setMapPosition([mapLat, mapLng]);
     }
   }, [mapLat, mapLng, isValidLat, isValidLng]);
 
+  // Update map position from geolocation when available
+  useEffect(() => {
+    if (geoLocationPosition) {
+      console.log("Geolocation position updated:", geoLocationPosition);
+      setMapPosition([geoLocationPosition.lat, geoLocationPosition.lng]);
+    }
+  }, [geoLocationPosition]);
+
+  // Log the final mapPosition state before rendering
+  useEffect(() => {
+    console.log("Final map position to be set:", mapPosition);
+  }, [mapPosition]);
+
   return (
     <div className={styles.mapContainer}>
+      <Button
+        type="position"
+        onClick={() => {
+          console.log("Button clicked to get position");
+          getPosition();
+        }}
+      >
+        {isLoadingPosition ? "Loading..." : "Use your position"}
+      </Button>
       <MapContainer
-        center={mapPosition} // Use validated map position
-        zoom={13}
+        center={mapPosition} // Use the current map position state
+        zoom={12} // Adjust zoom level as needed
         scrollWheelZoom={true}
         className={styles.map}
       >
@@ -53,10 +86,8 @@ function Map() {
             </Popup>
           </Marker>
         ))}
-        {/* Only attempt to change center if valid coordinates are provided */}
-        {isValidLat && isValidLng && (
-          <ChangeCenter position={[mapLat, mapLng]} />
-        )}
+        {/* Change the center of the map to the updated position */}
+        <ChangeCenter position={mapPosition} />
         <DetectClick />
       </MapContainer>
     </div>
@@ -65,19 +96,25 @@ function Map() {
 
 function ChangeCenter({ position }) {
   const map = useMap();
+
   useEffect(() => {
-    // Update map view if position is valid
     if (position && position[0] !== null && position[1] !== null) {
-      map.setView(position);
+      console.log("Changing map center to:", position);
+      map.setView(position, map.getZoom()); // Maintain current zoom level
     }
   }, [map, position]);
+
   return null;
 }
+
 function DetectClick() {
   const navigate = useNavigate();
 
   useMapEvents({
-    click: (e) => navigate(`form?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),
+    click: (e) => {
+      console.log("Map clicked at:", e.latlng);
+      navigate(`form?lat=${e.latlng.lat}&lng=${e.latlng.lng}`);
+    },
   });
 }
 
