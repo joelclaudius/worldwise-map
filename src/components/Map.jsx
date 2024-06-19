@@ -1,24 +1,41 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import styles from "./Map.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCities } from "../context/CitiesContext";
 
 function Map() {
-  const navigate = useNavigate();
   const { cities } = useCities();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [mapPosition, setMapPosition] = useState([40, 0]);
-  const mapLat = searchParams.get("lat");
-  const mapLng = searchParams.get("lng");
+
+  // Correct retrieval of lat and lng from search params
+  const mapLat = parseFloat(searchParams.get("lat"));
+  const mapLng = parseFloat(searchParams.get("lng"));
+
+  // Validate the lat and lng values
+  const isValidLat = !isNaN(mapLat) && mapLat >= -90 && mapLat <= 90;
+  const isValidLng = !isNaN(mapLng) && mapLng >= -180 && mapLng <= 180;
+
+  useEffect(() => {
+    if (isValidLat && isValidLng) {
+      setMapPosition([mapLat, mapLng]);
+    }
+  }, [mapLat, mapLng, isValidLat, isValidLng]);
 
   return (
     <div className={styles.mapContainer}>
       <MapContainer
-        // center={mapPosition}
-        center={[mapLat, mapLng]}
-        zoom={6}
+        center={mapPosition} // Use validated map position
+        zoom={13}
         scrollWheelZoom={true}
         className={styles.map}
       >
@@ -32,13 +49,34 @@ function Map() {
             key={city.id}
           >
             <Popup>
-              <span>{city.emoji} </span> <span>{city.cityName}</span>{" "}
+              <span>{city.emoji} </span> <span>{city.cityName}</span>
             </Popup>
           </Marker>
         ))}
+        {/* Only attempt to change center if valid coordinates are provided */}
+        {isValidLat && isValidLng && (
+          <ChangeCenter position={[mapLat, mapLng]} />
+        )}
+        <DetectClick />
       </MapContainer>
     </div>
   );
+}
+
+function ChangeCenter({ position }) {
+  const map = useMap();
+  useEffect(() => {
+    // Update map view if position is valid
+    if (position && position[0] !== null && position[1] !== null) {
+      map.setView(position);
+    }
+  }, [map, position]);
+  return null;
+}
+function DetectClick() {
+  const navigate = useNavigate();
+
+  useMapEvents({ click: (e) => navigate("form") });
 }
 
 export default Map;
