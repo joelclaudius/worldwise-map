@@ -35,6 +35,30 @@
         "lng": -9.140900099907554
       },
       "id": "7393077"
+    },
+    {
+      "id": "13c3",
+      "cityName": "Kajiado",
+      "country": "Kenya",
+      "emoji": "🇰🇪",
+      "date": "2024-06-20T23:06:44.400Z",
+      "notes": "",
+      "position": {
+        "lat": "-1.1094328",
+        "lng": "37.0138533"
+      }
+    },
+    {
+      "id": "1869",
+      "cityName": "Cilebar Satu",
+      "country": "Indonesia",
+      "emoji": "🇮🇩",
+      "date": "2024-06-20T23:13:53.278Z",
+      "notes": "",
+      "position": {
+        "lat": "-6.1168168",
+        "lng": "107.4019207"
+      }
     }
   ]
 }
