@@ -5,6 +5,8 @@ import Button from "./Button";
 import Spinner from "./Spinner";
 import BackButton from "./BackButton";
 import Message from "./Message";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export function convertToEmoji(countryCode) {
   const codePoints = countryCode
@@ -22,7 +24,7 @@ function Form() {
   const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
   const [cityName, setCityName] = useState("");
   const [country, setCountry] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today's date
+  const [date, setDate] = useState(new Date()); // Default to today's date
   const [notes, setNotes] = useState("");
   const [emoji, setEmoji] = useState("");
   const [geocodingError, setGeocodingError] = useState(null);
@@ -55,12 +57,19 @@ function Form() {
     fetchCityData();
   }, [mapLat, mapLng]); // Fetch data when lat or lng changes
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
   if (isLoadingGeocoding) return <Spinner />;
 
   if (geocodingError) return <Message message={geocodingError} />;
 
+  if (!mapLat || !mapLng)
+    return <Message message="Start by clicking somewhere on the map" />;
+
   return (
-    <form className={styles.form}>
+    <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.row}>
         <label htmlFor="cityName">City name</label>
         <input
@@ -73,11 +82,16 @@ function Form() {
       </div>
       <div className={styles.row}>
         <label htmlFor="date">When did you go to {cityName}?</label>
-        <input
+        {/* <input
           type="date"
           id="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+        /> */}
+        <DatePicker
+          id="date"
+          onChange={(date) => setDate(date)}
+          selected={date}
         />
       </div>
       <div className={styles.row}>
