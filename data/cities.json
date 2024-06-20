@@ -83,6 +83,78 @@
         "lat": "-1.1042816",
         "lng": "37.0180096"
       }
+    },
+    {
+      "id": "9c3a",
+      "cityName": "Isiolo",
+      "country": "Kenya",
+      "emoji": "🇰🇪",
+      "date": "2024-06-20T21:28:27.356Z",
+      "notes": "TEST3",
+      "position": {
+        "lat": "-1.1094328",
+        "lng": "37.0138533"
+      }
+    },
+    {
+      "id": "8afb",
+      "cityName": "Isiolo",
+      "country": "Kenya",
+      "emoji": "🇰🇪",
+      "date": "2024-06-20T21:28:27.356Z",
+      "notes": "TEST3",
+      "position": {
+        "lat": "-1.1094328",
+        "lng": "37.0138533"
+      }
+    },
+    {
+      "id": "8295",
+      "cityName": "Isiolo",
+      "country": "Kenya",
+      "emoji": "🇰🇪",
+      "date": "2024-06-20T21:28:27.356Z",
+      "notes": "TEST3",
+      "position": {
+        "lat": "-1.1094328",
+        "lng": "37.0138533"
+      }
+    },
+    {
+      "id": "d8b7",
+      "cityName": "Buikwe",
+      "country": "Uganda",
+      "emoji": "🇺🇬",
+      "date": "2024-06-20T21:29:11.377Z",
+      "notes": "TEST4",
+      "position": {
+        "lat": "-1.1094328",
+        "lng": "37.0138533"
+      }
+    },
+    {
+      "id": "5624",
+      "cityName": "Buikwe",
+      "country": "Uganda",
+      "emoji": "🇺🇬",
+      "date": "2024-06-20T21:29:11.377Z",
+      "notes": "TEST4",
+      "position": {
+        "lat": "-1.1094328",
+        "lng": "37.0138533"
+      }
+    },
+    {
+      "id": "f3aa",
+      "cityName": "Kiambu",
+      "country": "Kenya",
+      "emoji": "🇰🇪",
+      "date": "2024-06-20T21:30:43.245Z",
+      "notes": "",
+      "position": {
+        "lat": "-1.1094328",
+        "lng": "37.0138533"
+      }
     }
   ]
 }
