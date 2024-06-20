@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { useUrlPosition } from "../Hooks/useUrlPosition";
 import styles from "./Form.module.css";
 import Button from "./Button";
 import Spinner from "./Spinner";
 import BackButton from "./BackButton";
-import { useUrlPosition } from "../Hooks/useUrlPosition";
+import Message from "./Message";
 
 export function convertToEmoji(countryCode) {
   const codePoints = countryCode
@@ -24,28 +25,39 @@ function Form() {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today's date
   const [notes, setNotes] = useState("");
   const [emoji, setEmoji] = useState("");
+  const [geocodingError, setGeocodingError] = useState(null);
 
   useEffect(() => {
     if (!mapLat || !mapLng) return;
     const fetchCityData = async () => {
       try {
         setIsLoadingGeocoding(true);
+        setGeocodingError(null);
         const res = await fetch(
           `${BASE_URL}?latitude=${mapLat}&longitude=${mapLng}`
         );
         const data = await res.json();
         console.log(data);
+
+        if (!data.countryCode)
+          throw new Error(
+            "That doesn't seem to be a city. Please click somewhere else😊"
+          );
         setCityName(data.city || data.locality || "");
         setCountry(data.countryName);
         setEmoji(convertToEmoji(data.countryCode));
       } catch (err) {
-        console.error("Error loading city data:", err);
+        setGeocodingError(err.message);
       } finally {
         setIsLoadingGeocoding(false);
       }
     };
     fetchCityData();
   }, [mapLat, mapLng]); // Fetch data when lat or lng changes
+
+  if (isLoadingGeocoding) return <Spinner />;
+
+  if (geocodingError) return <Message message={geocodingError} />;
 
   return (
     <form className={styles.form}>
